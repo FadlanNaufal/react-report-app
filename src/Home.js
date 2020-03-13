@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text ,FlatList, Button,  Image, StyleSheet } from 'react-native';
+import { View, Text ,FlatList, Button, TextInput,  Image, StyleSheet } from 'react-native';
 import {Col,Row,Grid} from 'react-native-easy-grid';
 import axios from 'axios';
 import {
@@ -14,13 +14,15 @@ import {
     WaveIndicator,
   } from 'react-native-indicators';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
+import Searchbar from './Searchbar'
 
 export default class Home extends Component {
   constructor(props) {
     super(props);
+    this.arrayHolder = []
     this.state = {
         data : [],
-        loading : true
+        loading : true,
     };
   }
 
@@ -29,7 +31,7 @@ export default class Home extends Component {
   }
 
   getData(){
-    fetch('https://jsonplaceholder.typicode.com/photos')
+    fetch('https://jsonplaceholder.typicode.com/users')
     .then((response) => response.json())
     .then((responseJson) => {
 
@@ -37,6 +39,7 @@ export default class Home extends Component {
         loading: false,
         data: responseJson,
       }, function(){
+          this.arrayHolder = responseJson
           console.log(responseJson);
       });
 
@@ -46,7 +49,17 @@ export default class Home extends Component {
     });
   }
 
-
+  searchFilterFunction = (text) =>{
+    const newData = this.arrayHolder.filter(item=>{
+      const itemData = `${item.name.toUpperCase()}
+      ${item.username.toUpperCase()} ${item.email.toUpperCase()}`;
+      const textData = text.toUpperCase();
+      return itemData.indexOf(textData) > -1;
+    });
+    this.setState({
+      data : newData
+    })
+  }
 
   render() {
     return (
@@ -59,33 +72,52 @@ export default class Home extends Component {
                     style={{height : 100,width : 100,marginBottom : 20}}
                     />
                 </Col>
-                <Col style={{marginRight : 100,marginTop : 30}}>
+                <Col style={{marginRight : 0,marginTop : 30}}>
                     <Text style={{fontWeight : 'bold'}}>
                         Menampilkan laporan terkini di desa
                     </Text>
                 </Col>
+                <Col style={{justifyContent : 'center',marginLeft : 30}}>
+                    <TouchableOpacity style={{backgroundColor : 'red',width :80,height : 70,borderRadius : 5 , padding : 10}}>
+                      <Text>Add</Text>
+                    </TouchableOpacity>
+                </Col>
             </Grid>
+        </View>
+        <View style={{marginBottom : 20}}>
+          <TextInput
+           style={{ height: 40, paddingLeft : 20 , borderColor: '#EFF7FE', borderRadius : 10 ,borderWidth: 4 }}
+            placeholder="Search"
+            onChangeText={text => this.searchFilterFunction(text)}
+            autoCorrect={false}
+           />
         </View>
         {
             this.state.loading ? 
             <View style={styles.loadingBody}>
                 <UIActivityIndicator style={{marginTop : 200}} color='#00619D' />
             </View> :
-            <ScrollView style={styles.mainBody}>
+            <View style={styles.mainBody}>
+              <ScrollView>
                 <FlatList
                     data={this.state.data}
                     renderItem={({item}) => 
                         <TouchableOpacity onPress={()=>alert(item.id)} style={{backgroundColor : 'white',height : 100,width : '100%',marginBottom : 10, elevation : 1}}>
                             <View style={{flexDirection : 'row'}}>
                                 <Image source={{uri :'https://pluspng.com/img-png/burger-king-logo-png--500.png'}} style={{width : 50,height : 50}} />
-                                <Text style={{fontWeight : 'bold',width : '60%'}} numberOfLines={1}>{item.title}</Text>
+                                <Text style={{fontWeight : 'bold',width : '60%'}} numberOfLines={1}>{item.name}</Text>
                                 <Text style={{color :'gray',fontSize : 11,right :0 ,position : 'absolute'}}> 6 Hours Ago </Text>
+                            </View>
+                            <View>
+                            <Text style={{fontWeight : 'bold',width : '60%'}} numberOfLines={1}>{item.name}</Text>
                             </View>
                         </TouchableOpacity>
                     }
                     keyExtractor={({id}, index) => id}
                     />
             </ScrollView>
+              
+            </View>
         }
       </View>
     );
@@ -118,5 +150,6 @@ const styles = StyleSheet.create({
     },
     loadingBody : {
         maxHeight : '100%',
-    }
+    },
+
 })
