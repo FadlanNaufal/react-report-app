@@ -49,6 +49,10 @@ export default class Home extends Component {
     });
   }
 
+  history=(item)=>{
+    this.props.navigation.navigate('History', {name : 'Fadlan'})
+  }
+
   searchFilterFunction = (text) =>{
     const newData = this.arrayHolder.filter(item=>{
       const itemData = `${item.name.toUpperCase()}
@@ -64,41 +68,25 @@ export default class Home extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-            <Grid>
-                <Col style={{padding : 15}}>
-                    <Image 
-                    source={require('../img/header.png')}
-                    style={{height : 100,width : 100,marginBottom : 20}}
-                    />
-                </Col>
-                <Col style={{marginRight : 0,marginTop : 30}}>
-                    <Text style={{fontWeight : 'bold'}}>
-                        Menampilkan laporan terkini di desa
-                    </Text>
-                </Col>
-                <Col style={{justifyContent : 'center',marginLeft : 30}}>
-                    <TouchableOpacity style={{backgroundColor : 'red',width :80,height : 70,borderRadius : 5 , padding : 10}}>
-                      <Text>Add</Text>
-                    </TouchableOpacity>
-                </Col>
-            </Grid>
-        </View>
-        <View style={{marginBottom : 20}}>
+         <View style={{marginBottom : 20,flexDirection : 'row',}}>
           <TextInput
-           style={{ height: 40, paddingLeft : 20 , borderColor: '#EFF7FE', borderRadius : 10 ,borderWidth: 4 }}
+           style={{ height: 40, paddingLeft : 20 , borderColor: '#EFF7FE', borderRadius : 10 ,borderWidth: 4, width : 300}}
             placeholder="Search"
             onChangeText={text => this.searchFilterFunction(text)}
             autoCorrect={false}
            />
+           <TouchableOpacity onPress={this.history} style={{width : 50,right : 0,backgroundColor : '#3C98D1', justifyContent : 'center', alignItems : 'center' , height : 40, marginLeft : 10 , borderRadius : 7 }}>
+            <Image source={require('./../img/history.png')} style={{width : 30,height : 30}} />
+           </TouchableOpacity>
         </View>
+       
         {
             this.state.loading ? 
             <View style={styles.loadingBody}>
                 <UIActivityIndicator style={{marginTop : 200}} color='#00619D' />
             </View> :
-            <View style={styles.mainBody}>
-              <ScrollView>
+
+              <ScrollView  style={styles.mainBody}>
                 <FlatList
                     data={this.state.data}
                     renderItem={({item}) => 
@@ -109,16 +97,15 @@ export default class Home extends Component {
                                 <Text style={{color :'gray',fontSize : 11,right :0 ,position : 'absolute'}}> 6 Hours Ago </Text>
                             </View>
                             <View>
-                            <Text style={{fontWeight : 'bold',width : '60%'}} numberOfLines={1}>{item.name}</Text>
+                            <Text style={{fontWeight : 'bold',width : '60%'}} numberOfLines={1}>{item.username}</Text>
                             </View>
                         </TouchableOpacity>
                     }
                     keyExtractor={({id}, index) => id}
                     />
             </ScrollView>
-              
-            </View>
         }
+
       </View>
     );
   }
@@ -131,9 +118,9 @@ const styles = StyleSheet.create({
         padding : 10
     },
     header : {
-        height : 120,
+        height : 100,
         width : '100%',
-        backgroundColor : '#EFF7FE',
+        backgroundColor : '#00619D',
         borderRadius: 10,
         marginBottom : 20
     }, 
